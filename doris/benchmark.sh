@@ -6,49 +6,13 @@ set -ex
 # Install
 ROOT=$(pwd)
 
-if [[ -n "$1" ]]; then
-    url="$1"
-else
-    url='https://doris-release.s3.us-east-1.amazonaws.com/1.2/doris-1.2.0.alpha-x86_64.tar.gz'
-fi
-# Download
-file_name="$(basename ${url})"
-if [[ "$url" == "http"* ]]; then
-    if [[ ! -f $file_name ]]; then
-        wget --no-verbose --continue ${url}
-    else
-        echo "$file_name already exists, no need to download."
-    fi
-fi
-dir_name="${file_name/.tar.gz/}"
-
-# Try to stop SelectDB and remove it first if execute this script multiple times
-set +e
-"$dir_name"/fe/bin/stop_fe.sh
-"$dir_name"/be/bin/stop_be.sh
-rm -rf "$dir_name"
+DORIS_HOME="/root/doris/output"
+export DORIS_HOME
 set -e
 
-# Uncompress
-mkdir "$dir_name"
-tar zxf "$file_name" -C "$dir_name"
-DORIS_HOME="$ROOT/$dir_name/"
-export DORIS_HOME
-
-# Install dependencies
-sudo yum install -y mysql java-11-amazon-corretto.x86_64
-export JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto.x86_64/"
-export PATH=$JAVA_HOME/bin:$PATH
-
-IPADDR=$(hostname -i)
-
-# Start Frontend
-echo "priority_networks = ${IPADDR}/24" >>"$DORIS_HOME"/fe/conf/fe_custom.conf
 "$DORIS_HOME"/fe/bin/start_fe.sh --daemon
 
 # Start Backend
-echo "priority_networks = ${IPADDR}/24
-load_process_max_memory_limit_percent=80" >>"$DORIS_HOME"/be/conf/be_custom.conf
 sudo sysctl -w vm.max_map_count=2000000
 "$DORIS_HOME"/be/bin/start_be.sh --daemon
 
@@ -65,7 +29,7 @@ while true; do
 done
 
 # Setup cluster, add Backend to cluster
-mysql -h 127.0.0.1 -P9030 -uroot -e "ALTER SYSTEM ADD BACKEND '${IPADDR}:9050' "
+mysql -h 127.0.0.1 -P9030 -uroot -e "ALTER SYSTEM ADD BACKEND '127.0.0.1:9050' "
 
 # Wait for Backend ready
 while true; do
@@ -78,6 +42,7 @@ while true; do
         sleep 2
     fi
 done
+ROOT=$(pwd)
 
 # Create Database and table
 mysql -h 127.0.0.1 -P9030 -uroot -e "CREATE DATABASE hits"
