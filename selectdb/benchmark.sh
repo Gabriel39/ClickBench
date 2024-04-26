@@ -25,15 +25,15 @@ dir_name="${file_name/.tar.gz/}"
 
 # Try to stop SelectDB and remove it first if execute this script multiple times
 set +e
-"$dir_name"/fe/bin/stop_fe.sh
-"$dir_name"/be/bin/stop_be.sh
+"$dir_name"/output/fe/bin/stop_fe.sh
+"$dir_name"/output/be/bin/stop_be.sh
 rm -rf "$dir_name"
 set -e
 
 # Uncompress
 mkdir "$dir_name"
 tar zxf "$file_name" -C "$dir_name"
-DORIS_HOME="$ROOT/$dir_name/"
+DORIS_HOME="$ROOT/$dir_name/output"
 export DORIS_HOME
 
 # Install dependencies
