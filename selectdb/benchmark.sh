@@ -6,9 +6,40 @@ set -ex
 # Install
 ROOT=$(pwd)
 
-DORIS_HOME="/root/doris/output"
-export DORIS_HOME
+
+if [[ -n "$1" ]]; then
+    url="$1"
+else
+    url='https://selectdb.s3.amazonaws.com/selectdb-2.0.0-linux_x64.tar.gz'
+fi
+# Download
+file_name="$(basename ${url})"
+if [[ "$url" == "http"* ]]; then
+    if [[ ! -f $file_name ]]; then
+        wget --no-verbose --continue ${url}
+    else
+        echo "$file_name already exists, no need to download."
+    fi
+fi
+dir_name="${file_name/.tar.gz/}"
+
+# Try to stop SelectDB and remove it first if execute this script multiple times
+set +e
+"$dir_name"/fe/bin/stop_fe.sh
+"$dir_name"/be/bin/stop_be.sh
+rm -rf "$dir_name"
 set -e
+
+# Uncompress
+mkdir "$dir_name"
+tar zxf "$file_name" -C "$dir_name"
+DORIS_HOME="$ROOT/$dir_name/"
+export DORIS_HOME
+
+# Install dependencies
+sudo yum install -y mysql java-17-amazon-corretto.x86_64
+export JAVA_HOME="/usr/lib/jvm/java-17-amazon-corretto.x86_64/"
+export PATH=$JAVA_HOME/bin:$PATH
 
 "$DORIS_HOME"/fe/bin/start_fe.sh --daemon
 
@@ -42,7 +73,6 @@ while true; do
         sleep 2
     fi
 done
-ROOT=$(pwd)
 
 echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null
 
