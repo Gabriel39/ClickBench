@@ -37,7 +37,9 @@ DORIS_HOME="$ROOT/$dir_name/output"
 export DORIS_HOME
 
 # Install dependencies
-sudo yum install -y mysql java-17-amazon-corretto.x86_64
+sudo yum install -y java-17-amazon-corretto.x86_64
+sudo dnf -y localinstall https://dev.mysql.com/get/mysql80-community-release-el9-4.noarch.rpm
+sudo dnf -y install mysql mysql-community-client
 export JAVA_HOME="/usr/lib/jvm/java-17-amazon-corretto.x86_64/"
 export PATH=$JAVA_HOME/bin:$PATH
 
