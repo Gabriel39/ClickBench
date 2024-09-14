@@ -10,7 +10,7 @@ ROOT=$(pwd)
 if [[ -n "$1" ]]; then
     url="$1"
 else
-    url='https://doris-clickbench.oss-ap-southeast-1.aliyuncs.com/apache-doris-2.1.7-rc01-linux_x64.tar.gz'
+    url='https://doris-clickbench.oss-ap-southeast-1.aliyuncs.com/selectdb-2.1.4-linux_x64.tar.gz'
 fi
 # Download
 file_name="$(basename ${url})"
