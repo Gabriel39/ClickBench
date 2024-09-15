@@ -10,7 +10,7 @@ ROOT=$(pwd)
 if [[ -n "$1" ]]; then
     url="$1"
 else
-    url='https://doris-clickbench.oss-ap-southeast-1.aliyuncs.com/apache-doris-2.1.7-rc01-linux_x64.tar.gz'
+    url='https://doris-clickbench.oss-ap-southeast-1.aliyuncs.com/selectdb-doris-2.1.7-rc01-bin-x64.tar.gz'
 fi
 # Download
 file_name="$(basename ${url})"
@@ -25,15 +25,15 @@ dir_name="${file_name/.tar.gz/}"
 
 # Try to stop SelectDB and remove it first if execute this script multiple times
 set +e
-"$dir_name"/output/fe/bin/stop_fe.sh
-"$dir_name"/output/be/bin/stop_be.sh
+"$dir_name"/selectdb-doris-2.1.7-rc01-bin-x64/fe/bin/stop_fe.sh
+"$dir_name"/selectdb-doris-2.1.7-rc01-bin-x64/be/bin/stop_be.sh
 rm -rf "$dir_name"
 set -e
 
 # Uncompress
 mkdir "$dir_name"
 tar zxf "$file_name" -C "$dir_name"
-DORIS_HOME="$ROOT/$dir_name/output"
+DORIS_HOME="$ROOT/$dir_name/selectdb-doris-2.1.7-rc01-bin-x64"
 export DORIS_HOME
 
 # Install dependencies
