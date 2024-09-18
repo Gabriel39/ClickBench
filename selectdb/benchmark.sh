@@ -9,7 +9,7 @@ ROOT=$(pwd)
 if [[ -n "$1" ]]; then
     url="$1"
 else
-    url='https://apache-doris-releases.oss-accelerate.aliyuncs.com/apache-doris-2.1.7-rc01-bin-x64.tar.gz'
+    url='https://qa-build.oss-cn-beijing.aliyuncs.com/enterprise-doris-release-output/selectdb-doris-2.1.4-rc03-bin-x64.tar.gz'
 fi
 # Download
 file_name="$(basename ${url})"
@@ -24,15 +24,15 @@ dir_name="${file_name/.tar.gz/}"
 
 # Try to stop Doris and remove it first if execute this script multiple times
 set +e
-"$dir_name"/apache-doris-2.1.7-rc01-bin-x64/fe/bin/stop_fe.sh
-"$dir_name"/apache-doris-2.1.7-rc01-bin-x64/be/bin/stop_be.sh
+"$dir_name"/selectdb-doris-2.1.4-rc03-bin-x64/fe/bin/stop_fe.sh
+"$dir_name"/selectdb-doris-2.1.4-rc03-bin-x64/be/bin/stop_be.sh
 rm -rf "$dir_name"
 set -e
 
 # Uncompress
 mkdir "$dir_name"
 tar zxf "$file_name" -C "$dir_name"
-DORIS_HOME="$ROOT/$dir_name/apache-doris-2.1.7-rc01-bin-x64"
+DORIS_HOME="$ROOT/$dir_name/selectdb-doris-2.1.4-rc03-bin-x64"
 export DORIS_HOME
 
 # Install dependencies
